@@ -85,9 +85,7 @@ function toggleStyle(id) {
   if (id === "rejected-filter-btn") filterCards("rejected");
 }
 
-// -----------------------
-// EVENT DELEGATION
-// -----------------------
+
 allCards.addEventListener("click", function (event) {
   const card = event.target.closest(".job-card");
   if (!card) return;
