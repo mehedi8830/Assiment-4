@@ -1,6 +1,6 @@
 let currentStatus = "all";
 
-const total = document.getElementById("total");
+const totalCount = document.getElementById("total");
 const interviewCount = document.getElementById("interviewCount");
 const rejectedCount = document.getElementById("rejectedCount");
 const allFilterBtn = document.getElementById("all-filter-btn");
@@ -13,38 +13,56 @@ const cards = document.querySelectorAll(".job-card");
 // COUNT FUNCTION
 // -----------------------
 function calculateCount() {
+  let total = 0;
   let interview = 0;
   let rejected = 0;
-  let all = 0;
 
   document.querySelectorAll(".job-card").forEach((card) => {
     const status = card.dataset.status;
-
-    if (status === "all") all++;
+    if (status === "all") total++;
     if (status === "interview") interview++;
     if (status === "rejected") rejected++;
   });
 
-  total.innerText = all;
+  totalCount.innerText = total;
   interviewCount.innerText = interview;
   rejectedCount.innerText = rejected;
 }
-
 // -----------------------
 // FILTER FUNCTION
 // -----------------------
+
+// function filterCards(status) {
+//   currentStatus = status;
+
+//   cards.forEach((card) => {
+//     if (card.dataset.status === status) {
+//       card.classList.remove("hidden");
+//     } else {
+//       card.classList.add("hidden");
+//     }
+//   });
+
+//   checkEmptyState();
+// }
 
 function filterCards(status) {
   currentStatus = status;
 
   cards.forEach((card) => {
-    if (card.dataset.status === status) {
-      card.classList.remove("hidden");
-    } else {
+    if (status === "delete") {
       card.classList.add("hidden");
     }
+    if (status === "all") {
+      card.classList.remove("hidden");
+    } else {
+      if (card.dataset.status === status) {
+        card.classList.remove("hidden");
+      } else {
+        card.classList.add("hidden");
+      }
+    }
   });
-
   checkEmptyState();
 }
 
@@ -55,7 +73,7 @@ function checkEmptyState() {
 
   const emptyMessage = document.getElementById("emptyMessage");
 
-  if (visibleCards.length === 0) {
+  if (visibleCards.length === 0 || allCards.children.length === 0) {
     emptyMessage.classList.remove("hidden");
     emptyMessage.classList.add("flex");
   } else {
@@ -85,7 +103,9 @@ function toggleStyle(id) {
   if (id === "rejected-filter-btn") filterCards("rejected");
 }
 
-
+// -----------------------
+// EVENT DELEGATION
+// -----------------------
 allCards.addEventListener("click", function (event) {
   const card = event.target.closest(".job-card");
   if (!card) return;
@@ -104,8 +124,13 @@ allCards.addEventListener("click", function (event) {
 
   // DELETE BUTTON
   if (event.target.closest(".btn-delete")) {
-    card.dataset.status = "all";
-    card.querySelector("span").innerText = "NOT APPLIED";
+    if (card.dataset.status === "all") {
+      card.dataset.status = "delete";
+      card.remove();
+    } else {
+      card.dataset.status = "all";
+      card.querySelector("span").innerText = "NOT APPLIED";
+    }
   }
 
   calculateCount();
